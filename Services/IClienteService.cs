@@ -15,7 +15,7 @@ namespace InventarioAPI.Services
     public interface IClienteService
     {
         public Task<IEnumerable<ClienteDTO>> GetClientes();
-        public ClienteDTO GetCliente(Cliente cliente);
+        public Task<ClienteDTO> GetCliente(int id);
         public Task<Cliente> PostClientes(ClienteCreacionDTO cliente);
         public Task PutClientes(ClienteCreacionDTO _cliente, int id);
         public Task DeleteCliente(int id);
@@ -42,10 +42,10 @@ namespace InventarioAPI.Services
             return _clientes;
         }
 
-        public ClienteDTO GetCliente(Cliente cliente)
+        public async Task<ClienteDTO> GetCliente(int id)
         {
+            var cliente = await context.Clientes.FirstOrDefaultAsync(x => x.Id == id);
             var _cliente = mapper.Map<ClienteDTO>(cliente);
-
             return _cliente;
         }
         public async Task<Cliente> PostClientes(ClienteCreacionDTO _cliente)

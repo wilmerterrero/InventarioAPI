@@ -20,41 +20,35 @@ namespace CientesAPI.Controllers
     {
         private readonly AppDbContext context;
         private readonly ILogger<ClientesController> logger;
-        private readonly IMapper mapper;
         private readonly IClienteService clienteService;
 
         public ClientesController(AppDbContext context,
                                   ILogger<ClientesController> logger,
-                                  IMapper mapper,
                                   IClienteService clienteService)
         {
             this.context = context;
             this.logger = logger;
-            this.mapper = mapper;
             this.clienteService = clienteService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ClienteDTO>>> Get()
         {
-            var cliente = await clienteService.GetClientes();
-            return Ok(cliente);
+            var clientes = await clienteService.GetClientes();
+            return Ok(clientes);
         }
 
         [HttpGet("{id}", Name = "GetCliente")]
         public async Task<ActionResult<ClienteDTO>> Get(int id)
         {
-            var cliente = await context.Clientes.FirstOrDefaultAsync(x => x.Id == id);
-
             if(!await clienteService.ClienteExists(id))
             {
                 logger.LogWarning($"El Id {id} no se ha encontrado.");
                 return NotFound();
             }
 
-            var _cliente = clienteService.GetCliente(cliente);
-
-            return _cliente;
+            var cliente = await clienteService.GetCliente(id);
+            return Ok(cliente);
         }
 
         [Route("presupuesto")]
