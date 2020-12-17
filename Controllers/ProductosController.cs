@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using InventarioAPI.Entities;
-using Microsoft.Extensions.Logging;
-using InventarioAPI.Context;
+using InventarioAPI.Services;
+using InventarioAPI.Models;
 
 namespace InventarioAPI.Controllers
 {
@@ -14,72 +11,50 @@ namespace InventarioAPI.Controllers
     [ApiController]
     public class ProductosController : ControllerBase
     {
-        private readonly AppDbContext _context;
-        private readonly ILogger<ProductosController> logger;
+        private readonly IProductoService productoService;
 
-        public ProductosController(AppDbContext context, ILogger<ProductosController> logger)
+        public ProductosController(IProductoService productoService)
         {
-            _context = context;
-            this.logger = logger;
+            this.productoService = productoService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Producto>>> Get()
         {
-            return await _context.Productos.Include(x => x.Proveedor).ToListAsync();
+            var productos = await productoService.GetProductos();
+            return Ok(productos);
         }
 
         [HttpGet("{id}", Name = "GetProducto")]
         public async Task<ActionResult<Producto>> Get(int id)
         {
-            var producto = await _context.Productos.Include(x => x.Proveedor).FirstOrDefaultAsync(x => x.Id == id);
-
-            if (producto == null)
+            if (!await productoService.ProductoExists(id))
             {
-                logger.LogWarning($"El Id {id} no se ha encontrado.");
-                return NotFound();
+                return NotFound($"El Id {id} no se ha encontrado.");
             }
 
-            return producto;
+            var producto = await productoService.GetProducto(id);
+
+            return Ok(producto);
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody]Producto producto)
+        public async Task<ActionResult> Post([FromBody]ProductoDTO productoFromBody)
         {
-            var prodCodigo = $"{producto.ProdNombre[0]}-{new Random(1000)}";
-            producto.ProdCodigo = prodCodigo;
-            _context.Productos.Add(producto);
-            await _context.SaveChangesAsync();
+            var producto = await productoService.PostProducto(productoFromBody);
 
             return new CreatedAtRouteResult("GetProducto", new { id = producto.Id }, producto);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Put(int id, Producto producto)
+        public async Task<IActionResult> Put(int id, ProductoDTO producto)
         {
-            if (id != producto.Id)
+            if (!await productoService.ProductoExists(id))
             {
-                logger.LogWarning($"El Id {id} no se ha encontrado.");
-                return BadRequest();
+                return BadRequest($"El Id {id} no se ha encontrado.");
             }
 
-            _context.Entry(producto).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            await productoService.PutProducto(id, producto);
 
             return NoContent();
         }
@@ -87,22 +62,15 @@ namespace InventarioAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Producto>> DeleteProducto(int id)
         {
-            var producto = await _context.Productos.FindAsync(id);
-            if (producto == null)
+            
+            if (!await productoService.ProductoExists(id))
             {
-                logger.LogWarning($"El Id {id} no se ha encontrado.");
-                return NotFound();
+                return NotFound($"El Id {id} no se ha encontrado.");
             }
 
-            _context.Productos.Remove(producto);
-            await _context.SaveChangesAsync();
+            var producto = await productoService.DeleteProducto(id);
 
             return producto;
-        }
-
-        private bool ProductoExists(int id)
-        {
-            return _context.Productos.Any(e => e.Id == id);
         }
     }
 }

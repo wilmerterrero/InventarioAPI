@@ -34,8 +34,11 @@ namespace CientesAPI
             {
                 configuration.CreateMap<Cliente, ClienteDTO>();
                 configuration.CreateMap<ClienteCreacionDTO, Cliente>();
+                configuration.CreateMap<ProductoDTO, Producto>();
+                //configuration.CreateMap<Proveedor, ProductoDTO>();
             }, typeof(Startup));
             services.AddTransient<IClienteService, ClienteService>();
+            services.AddTransient<IProductoService, ProductoService>();
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("DefaultConnectionString")));
             services.AddControllers()
                 .AddNewtonsoftJson(options => options

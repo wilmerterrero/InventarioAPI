@@ -19,15 +19,11 @@ namespace CientesAPI.Controllers
     public class ClientesController : ControllerBase
     {
         private readonly AppDbContext context;
-        private readonly ILogger<ClientesController> logger;
         private readonly IClienteService clienteService;
 
-        public ClientesController(AppDbContext context,
-                                  ILogger<ClientesController> logger,
-                                  IClienteService clienteService)
+        public ClientesController(AppDbContext context, IClienteService clienteService)
         {
             this.context = context;
-            this.logger = logger;
             this.clienteService = clienteService;
         }
 
@@ -43,8 +39,7 @@ namespace CientesAPI.Controllers
         {
             if(!await clienteService.ClienteExists(id))
             {
-                logger.LogWarning($"El Id {id} no se ha encontrado.");
-                return NotFound();
+                return NotFound($"El Id {id} no se ha encontrado.");
             }
 
             var cliente = await clienteService.GetCliente(id);
@@ -58,16 +53,16 @@ namespace CientesAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] ClienteCreacionDTO _cliente)
+        public async Task<ActionResult> Post([FromBody] ClienteCreacionDTO clienteFromBody)
         {
-            var cliente = await clienteService.PostClientes(_cliente);
+            var cliente = await clienteService.PostClientes(clienteFromBody);
             return new CreatedAtRouteResult("GetCliente", new { id = cliente.Id }, cliente);
         }
 
         [HttpPut("{id}")]
-        public ActionResult Put([FromBody] ClienteCreacionDTO _cliente, int id)
+        public ActionResult Put([FromBody] ClienteCreacionDTO clienteFromBody, int id)
         {
-            clienteService.PutClientes(_cliente, id);
+            clienteService.PutClientes(clienteFromBody, id);
 
             return NoContent();
         }
@@ -82,8 +77,7 @@ namespace CientesAPI.Controllers
 
             if (!await clienteService.ClienteExists(id))
             {
-                logger.LogWarning($"El Id {id} no se ha encontrado.");
-                return NotFound();
+                return NotFound($"El Id {id} no se ha encontrado.");
             }
 
             var cliente = await context.Clientes.FirstOrDefaultAsync(x => x.Id == id);
@@ -107,8 +101,7 @@ namespace CientesAPI.Controllers
         {
             if(!await clienteService.ClienteExists(id))
             {
-                logger.LogWarning($"El Id {id} no se ha encontrado.");
-                return NotFound();
+                return NotFound($"El Id {id} no se ha encontrado.");
             }
 
             await clienteService.DeleteCliente(id);

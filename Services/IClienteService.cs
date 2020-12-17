@@ -48,17 +48,18 @@ namespace InventarioAPI.Services
             var _cliente = mapper.Map<ClienteDTO>(cliente);
             return _cliente;
         }
-        public async Task<Cliente> PostClientes(ClienteCreacionDTO _cliente)
+        public async Task<Cliente> PostClientes(ClienteCreacionDTO clienteFromBody)
         {
-            var cliente = mapper.Map<Cliente>(_cliente);
+            var cliente = mapper.Map<Cliente>(clienteFromBody);
+
             context.Clientes.Add(cliente);
             await context.SaveChangesAsync();
-            var clienteDTO = mapper.Map<Cliente>(cliente);
-            return clienteDTO;
+
+            return cliente;
         }
-        public async Task PutClientes(ClienteCreacionDTO _cliente, int id)
+        public async Task PutClientes(ClienteCreacionDTO clienteFromBody, int id)
         {
-            var cliente = mapper.Map<Cliente>(_cliente);
+            var cliente = mapper.Map<Cliente>(clienteFromBody);
             cliente.Id = id;
             context.Entry(cliente).State = EntityState.Modified;
             await context.SaveChangesAsync();
@@ -77,7 +78,5 @@ namespace InventarioAPI.Services
         {
             return await context.Clientes.AnyAsync(e => e.Id == id);
         }
-
-        
     }
 }

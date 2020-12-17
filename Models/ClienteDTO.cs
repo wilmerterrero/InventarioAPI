@@ -10,11 +10,7 @@ namespace InventarioAPI.Models
     public class ClienteDTO
     {
         public int Id { get; set; }
-        [Required]
-        [Capitalize]
         public string Nombre { get; set; }
-        [Required]
-        [Capitalize]
         public string Apellido { get; set; }
     }
 }
