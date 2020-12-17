@@ -1,10 +1,8 @@
-﻿using InventarioAPI.Context;
-using InventarioAPI.Entities;
+﻿using InventarioAPI.Entities;
+using InventarioAPI.Models;
+using InventarioAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace InventarioAPI.Controllers
@@ -13,54 +11,49 @@ namespace InventarioAPI.Controllers
     [ApiController]
     public class ProveedoresController: ControllerBase
     {
-        private readonly AppDbContext context;
-        private readonly ILogger<ProveedoresController> logger;
+        private readonly IProveedorService proveedorService;
 
-        public ProveedoresController(AppDbContext context, ILogger<ProveedoresController> logger)
+        public ProveedoresController(IProveedorService proveedorService)
         {
-            this.context = context;
-            this.logger = logger;
+            this.proveedorService = proveedorService;
         }
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Proveedor>>> Get()
         {
-            return await context.Proveedores.Include(x => x.Productos).ToListAsync();
+            var proveedores = await proveedorService.GetProveedores();
+            return Ok(proveedores);
         }
 
         [HttpGet("{id}", Name = "GetProveedor")]
         public async Task<ActionResult<Proveedor>> Get(int id)
         {
-            var proveedor = await context.Proveedores.Include(x => x.Productos).FirstOrDefaultAsync(x => x.Id == id);
+            var proveedor = await proveedorService.GetProveedor(id);
 
-            if (proveedor == null)
+            if (!await proveedorService.ProveedorExists(id))
             {
-                logger.LogWarning($"El Id {id} no se ha encontrado.");
-                return NotFound();
+                return NotFound($"El Id {id} no se ha encontrado.");
             }
 
             return proveedor;
         }
 
         [HttpPost]
-        public async Task<ActionResult> Post([FromBody] Proveedor proveedor)
+        public async Task<ActionResult> Post([FromBody] ProveedorDTO proveedorFromBody)
         {
-            context.Proveedores.Add(proveedor);
-            await context.SaveChangesAsync();
+            var proveedor = await proveedorService.PostProveedor(proveedorFromBody);
             return new CreatedAtRouteResult("GetProveedor", new { id = proveedor.Id }, proveedor);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> Put(int id, [FromBody] Proveedor proveedor)
+        public async Task<ActionResult> Put(int id, [FromBody] ProveedorDTO proveedorFromBody)
         {
-            if (id != proveedor.Id)
+            if (!await proveedorService.ProveedorExists(id))
             {
-                logger.LogWarning($"El Id {id} no se ha encontrado.");
-                return NotFound();
+                return NotFound($"El Id {id} no se ha encontrado.");
             }
 
-            context.Entry(proveedor).State = EntityState.Modified;
-            await context.SaveChangesAsync();
+            await proveedorService.PutProveedor(id, proveedorFromBody);
 
             return NoContent();
         }
@@ -68,19 +61,14 @@ namespace InventarioAPI.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult<Proveedor>> Delete(int id)
         {
-            var proveedorId = await context.Proveedores.Select(x => x.Id).FirstOrDefaultAsync(x => x == id);
-
-            if (proveedorId == default(int))
+            if (!await proveedorService.ProveedorExists(id))
             {
-                logger.LogWarning($"El Id {id} no se ha encontrado.");
-                return NotFound();
+                return NotFound($"El Id {id} no se ha encontrado.");
             }
 
-            context.Proveedores.Remove(new Proveedor { Id = proveedorId });
+            var proveedor = await proveedorService.DeleteProveedor(id);
 
-            await context.SaveChangesAsync();
-
-            return NoContent();
+            return proveedor;
         }
     }
 }

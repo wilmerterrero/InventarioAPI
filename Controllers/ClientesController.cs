@@ -60,9 +60,9 @@ namespace CientesAPI.Controllers
         }
 
         [HttpPut("{id}")]
-        public ActionResult Put([FromBody] ClienteCreacionDTO clienteFromBody, int id)
+        public ActionResult Put(int id, [FromBody] ClienteCreacionDTO clienteFromBody)
         {
-            clienteService.PutClientes(clienteFromBody, id);
+            clienteService.PutClientes(id, clienteFromBody);
 
             return NoContent();
         }
@@ -97,16 +97,16 @@ namespace CientesAPI.Controllers
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> Delete(int id)
+        public async Task<ActionResult<Cliente>> Delete(int id)
         {
             if(!await clienteService.ClienteExists(id))
             {
                 return NotFound($"El Id {id} no se ha encontrado.");
             }
 
-            await clienteService.DeleteCliente(id);
+            var cliente = await clienteService.DeleteCliente(id);
 
-            return NoContent();
+            return cliente;
         }
     }
 }

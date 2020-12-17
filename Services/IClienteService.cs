@@ -16,9 +16,9 @@ namespace InventarioAPI.Services
     {
         public Task<IEnumerable<ClienteDTO>> GetClientes();
         public Task<ClienteDTO> GetCliente(int id);
-        public Task<Cliente> PostClientes(ClienteCreacionDTO cliente);
-        public Task PutClientes(ClienteCreacionDTO _cliente, int id);
-        public Task DeleteCliente(int id);
+        public Task<Cliente> PostClientes(ClienteCreacionDTO clienteFromBody);
+        public Task PutClientes(int id, ClienteCreacionDTO clienteFromBody);
+        public Task<Cliente> DeleteCliente(int id);
         public Task<int> GetPresupuestoTotal();
         public Task<bool> ClienteExists(int id);
     }
@@ -57,18 +57,20 @@ namespace InventarioAPI.Services
 
             return cliente;
         }
-        public async Task PutClientes(ClienteCreacionDTO clienteFromBody, int id)
+        public async Task PutClientes(int id, ClienteCreacionDTO clienteFromBody)
         {
             var cliente = mapper.Map<Cliente>(clienteFromBody);
             cliente.Id = id;
             context.Entry(cliente).State = EntityState.Modified;
             await context.SaveChangesAsync();
         }
-        public async Task DeleteCliente(int id)
+        public async Task<Cliente> DeleteCliente(int id)
         {
-            var clienteId = await context.Clientes.Select(x => x.Id).FirstOrDefaultAsync(x => x == id);
-            context.Clientes.Remove(new Cliente { Id = clienteId });
+            var cliente = await context.Clientes.FindAsync(id);
+            context.Clientes.Remove(cliente);
             await context.SaveChangesAsync();
+
+            return cliente;
         }
         public async Task<int> GetPresupuestoTotal()
         {

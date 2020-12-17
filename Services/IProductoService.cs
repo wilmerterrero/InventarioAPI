@@ -76,7 +76,5 @@ namespace InventarioAPI.Services
         {
             return await context.Productos.AnyAsync(e => e.Id == id);
         }
-
-        
     }
 }
