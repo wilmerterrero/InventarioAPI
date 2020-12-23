@@ -18,14 +18,14 @@ namespace InventarioAPI.Controllers
             this.productoService = productoService;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "ObtenerProductos")]
         public async Task<ActionResult<IEnumerable<Producto>>> Get()
         {
             var productos = await productoService.GetProductos();
             return Ok(productos);
         }
 
-        [HttpGet("{id}", Name = "GetProducto")]
+        [HttpGet("{id}", Name = "ObtenerProducto")]
         public async Task<ActionResult<Producto>> Get(int id)
         {
             if (!await productoService.ProductoExists(id))
@@ -38,15 +38,15 @@ namespace InventarioAPI.Controllers
             return Ok(producto);
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CrearProducto")]
         public async Task<ActionResult> Post([FromBody]ProductoDTO productoFromBody)
         {
             var producto = await productoService.PostProducto(productoFromBody);
 
-            return new CreatedAtRouteResult("GetProducto", new { id = producto.Id }, producto);
+            return new CreatedAtRouteResult("ObtenerProducto", new { id = producto.Id }, producto);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "ActualizarProducto")]
         public async Task<IActionResult> Put(int id, ProductoDTO producto)
         {
             if (!await productoService.ProductoExists(id))
@@ -59,7 +59,7 @@ namespace InventarioAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "EliminarProducto")]
         public async Task<ActionResult<Producto>> DeleteProducto(int id)
         {
             

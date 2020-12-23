@@ -18,14 +18,14 @@ namespace InventarioAPI.Controllers
             this.proveedorService = proveedorService;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "ObtenerProveedores")]
         public async Task<ActionResult<IEnumerable<Proveedor>>> Get()
         {
             var proveedores = await proveedorService.GetProveedores();
             return Ok(proveedores);
         }
 
-        [HttpGet("{id}", Name = "GetProveedor")]
+        [HttpGet("{id}", Name = "ObtenerProveedor")]
         public async Task<ActionResult<Proveedor>> Get(int id)
         {
             var proveedor = await proveedorService.GetProveedor(id);
@@ -38,14 +38,14 @@ namespace InventarioAPI.Controllers
             return proveedor;
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CrearProveedor")]
         public async Task<ActionResult> Post([FromBody] ProveedorDTO proveedorFromBody)
         {
             var proveedor = await proveedorService.PostProveedor(proveedorFromBody);
-            return new CreatedAtRouteResult("GetProveedor", new { id = proveedor.Id }, proveedor);
+            return new CreatedAtRouteResult("ObtenerProveedor", new { id = proveedor.Id }, proveedor);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "ActualizarProveedor")]
         public async Task<ActionResult> Put(int id, [FromBody] ProveedorDTO proveedorFromBody)
         {
             if (!await proveedorService.ProveedorExists(id))
@@ -58,7 +58,7 @@ namespace InventarioAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "EliminarProveedor")]
         public async Task<ActionResult<Proveedor>> Delete(int id)
         {
             if (!await proveedorService.ProveedorExists(id))

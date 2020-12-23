@@ -40,7 +40,8 @@ namespace CientesAPI
             services.AddTransient<IClienteService, ClienteService>();
             services.AddTransient<IProductoService, ProductoService>();
             services.AddTransient<IProveedorService, ProveedorService>();
-            services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("SQL_SERVER")));
+            services.AddDbContext<AppDbContext>(options => 
+                options.UseSqlServer(Configuration.GetConnectionString("SQL_SERVER")));
             services.AddControllers()
                 .AddNewtonsoftJson(options => options
                 .SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);

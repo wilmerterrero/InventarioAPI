@@ -27,14 +27,14 @@ namespace CientesAPI.Controllers
             this.clienteService = clienteService;
         }
 
-        [HttpGet]
+        [HttpGet(Name = "ObtenerClientes")]
         public async Task<ActionResult<IEnumerable<ClienteDTO>>> Get()
         {
             var clientes = await clienteService.GetClientes();
             return Ok(clientes);
         }
 
-        [HttpGet("{id}", Name = "GetCliente")]
+        [HttpGet("{id}", Name = "ObtenerCliente")]
         public async Task<ActionResult<ClienteDTO>> Get(int id)
         {
             if(!await clienteService.ClienteExists(id))
@@ -52,14 +52,14 @@ namespace CientesAPI.Controllers
             return Ok(clienteService.GetPresupuestoTotal());
         }
 
-        [HttpPost]
+        [HttpPost(Name = "CrearCliente")]
         public async Task<ActionResult> Post([FromBody] ClienteCreacionDTO clienteFromBody)
         {
             var cliente = await clienteService.PostClientes(clienteFromBody);
-            return new CreatedAtRouteResult("GetCliente", new { id = cliente.Id }, cliente);
+            return new CreatedAtRouteResult("ObtenerCliente", new { id = cliente.Id }, cliente);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("{id}", Name = "ActualizarCliente")]
         public ActionResult Put(int id, [FromBody] ClienteCreacionDTO clienteFromBody)
         {
             clienteService.PutClientes(id, clienteFromBody);
@@ -67,7 +67,7 @@ namespace CientesAPI.Controllers
             return NoContent();
         }
 
-        [HttpPatch("{id}")]
+        [HttpPatch("{id}", Name = "PatchCliente")]
         public async Task<ActionResult> Patch(int id, [FromBody] JsonPatchDocument<Cliente> patchDocument)
         {
             if (patchDocument == null)
@@ -96,7 +96,7 @@ namespace CientesAPI.Controllers
             return NoContent();
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("{id}", Name = "EliminarCliente")]
         public async Task<ActionResult<Cliente>> Delete(int id)
         {
             if(!await clienteService.ClienteExists(id))
