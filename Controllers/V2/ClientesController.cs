@@ -1,16 +1,5 @@
-﻿using AutoMapper;
-using InventarioAPI.Context;
-using InventarioAPI.Entities;
-using InventarioAPI.Models;
-using InventarioAPI.Services;
-using Microsoft.AspNetCore.JsonPatch;
+﻿using InventarioAPI.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace InventarioAPI.Controllers.v2
 {
@@ -25,6 +14,10 @@ namespace InventarioAPI.Controllers.v2
             this.clienteService = clienteService;
         }
 
+        /// <summary>
+        /// Suma de todos los presupuestos de todos los clientes
+        /// </summary>
+        /// <returns></returns>
         [HttpGet("presupuesto")]
         public IActionResult GetPresupuestoTotal()
         {

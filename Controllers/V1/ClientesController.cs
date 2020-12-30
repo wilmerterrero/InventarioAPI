@@ -1,12 +1,10 @@
-﻿using AutoMapper;
-using InventarioAPI.Context;
+﻿using InventarioAPI.Context;
 using InventarioAPI.Entities;
 using InventarioAPI.Models;
 using InventarioAPI.Services;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,9 +30,18 @@ namespace InventarioAPI.Controllers.V1
         /// </summary>
         /// <returns>IEnumerable de ClienteDTO</returns>
         [HttpGet(Name = "ObtenerClientes")]
-        public async Task<ActionResult<IEnumerable<ClienteDTO>>> Get()
+        public async Task<ActionResult<IEnumerable<ClienteDTO>>> GetClientes(int numeroDePaginas = 1, int cantidadDeRegistros = 10)
         {
-            var clientes = await clienteService.GetClientes();
+            var query = context.Clientes.AsQueryable();
+            var totalRegistros = query.Count();
+
+            var clientes = await clienteService.GetClientes(numeroDePaginas, cantidadDeRegistros);
+
+            int cantidadDePaginas = ((int)Math.Ceiling((double)totalRegistros / cantidadDeRegistros));
+
+            Response.Headers["X-Total-Registros"] = totalRegistros.ToString();
+            Response.Headers["X-Cantidad-Paginas"] = cantidadDePaginas.ToString();
+
             return Ok(clientes);
         }
 
@@ -44,7 +51,7 @@ namespace InventarioAPI.Controllers.V1
         /// <param name="id">Id del elemento</param>
         /// <returns>ClienteDTO</returns>
         [HttpGet("{id}", Name = "ObtenerCliente")]
-        public async Task<ActionResult<ClienteDTO>> Get(int id)
+        public async Task<ActionResult<ClienteDTO>> GetCliente(int id)
         {
             if(!await clienteService.ClienteExists(id))
             {

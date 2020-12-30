@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,7 +54,9 @@ namespace CientesAPI
             services.AddDbContext<AppDbContext>(options => 
                 options.UseSqlServer(Configuration.GetConnectionString("SQL_SERVER")));
 
-            services.AddControllers()
+            services.AddControllers(config => {
+                config.Conventions.Add(new ApiExplorerGroupPerVersionConvention());
+            })
                 .AddNewtonsoftJson(options => options
                 .SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
 
@@ -62,6 +65,25 @@ namespace CientesAPI
                 config.SwaggerDoc("v1", new OpenApiInfo { 
                     Version = "v1", 
                     Title = "Inventario API V1",
+                    Description = "Inventory api only for practice purposes",
+                    TermsOfService = new Uri("https://wilmerterrero.com"),
+                    License = new OpenApiLicense()
+                    {
+                        Name = "MIT",
+                        Url = new Uri("https://wilmerterrero.com")
+                    },
+                    Contact = new OpenApiContact()
+                    {
+                        Name = "Wilmer Terrero",
+                        Email = "wilmerterrero@test.com",
+                        Url = new Uri("https://wilmerterrero.com")
+                    }
+                });
+
+                config.SwaggerDoc("v2", new OpenApiInfo
+                {
+                    Version = "v2",
+                    Title = "Inventario API V2",
                     Description = "Inventory api only for practice purposes",
                     TermsOfService = new Uri("https://wilmerterrero.com"),
                     License = new OpenApiLicense()
@@ -100,6 +122,7 @@ namespace CientesAPI
             app.UseSwaggerUI(config =>
             {
                 config.SwaggerEndpoint("/swagger/v1/swagger.json", "Inventario API V1");
+                config.SwaggerEndpoint("/swagger/v2/swagger.json", "Inventario API V2");
             });
 
             app.UseRouting();
@@ -110,6 +133,17 @@ namespace CientesAPI
             {
                 endpoints.MapControllers();
             });
+        }
+
+        public class ApiExplorerGroupPerVersionConvention : IControllerModelConvention
+        {
+            public void Apply(ControllerModel controller)
+            {
+                // example: "Controllers.v1"
+                var controllerNamespace = controller.ControllerType.Namespace;
+                var apiVersion = controllerNamespace.Split('.').Last().ToLower();
+                controller.ApiExplorer.GroupName = apiVersion;
+            }
         }
     }
 }
