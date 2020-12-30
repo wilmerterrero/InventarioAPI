@@ -5,9 +5,9 @@ using InventarioAPI.Entities;
 using InventarioAPI.Services;
 using InventarioAPI.Models;
 
-namespace InventarioAPI.Controllers
+namespace InventarioAPI.Controllers.V1
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class ProductosController : ControllerBase
     {

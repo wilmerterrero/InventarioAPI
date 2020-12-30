@@ -12,9 +12,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace CientesAPI.Controllers
+namespace InventarioAPI.Controllers.V1
 {
-    [Route("api/[controller]")]
+    [Route("api/v1/[controller]")]
     [ApiController]
     public class ClientesController : ControllerBase
     {
@@ -43,13 +43,10 @@ namespace CientesAPI.Controllers
             }
 
             var cliente = await clienteService.GetCliente(id);
-            return Ok(cliente);
-        }
 
-        [Route("presupuesto")]
-        public IActionResult GetPresupuestoTotal()
-        {
-            return Ok(clienteService.GetPresupuestoTotal());
+            GenerarEnlaces(cliente);
+
+            return Ok(cliente);
         }
 
         [HttpPost(Name = "CrearCliente")]
@@ -107,6 +104,15 @@ namespace CientesAPI.Controllers
             var cliente = await clienteService.DeleteCliente(id);
 
             return cliente;
+        }
+        private void GenerarEnlaces(ClienteDTO cliente)
+        {
+            cliente.Enlaces = new List<Enlace>()
+            {
+                 new Enlace(href: Url.Link("ObtenerCliente", new { id = cliente.Id }), rel: "self", metodo: "GET"),
+                 new Enlace(href: Url.Link("ActualizarCliente", new { id = cliente.Id }), rel: "actualizar-cliente", metodo: "PUT"),
+                 new Enlace(href: Url.Link("EliminarCliente", new { id = cliente.Id }), rel: "eliminar-cliente", metodo: "DELETE"),
+            };
         }
     }
 }

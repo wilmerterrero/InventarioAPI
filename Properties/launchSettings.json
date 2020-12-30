@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "api/clientes",
+      "launchUrl": "api/v1/clientes",
       "environmentVariables": {
         "connectionStrings:SQL_SERVER": "Data Source=WILMER;Initial Catalog=Clientes;Integrated Security=True;User ID=wilmer;Password=wilmer",
         "ASPNETCORE_ENVIRONMENT": "Development"

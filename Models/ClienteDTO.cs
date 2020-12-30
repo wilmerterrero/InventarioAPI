@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace InventarioAPI.Models
 {
-    public class ClienteDTO
+    public class ClienteDTO : Recurso
     {
         public int Id { get; set; }
         public string Nombre { get; set; }
