@@ -27,6 +27,10 @@ namespace InventarioAPI.Controllers.V1
             this.clienteService = clienteService;
         }
 
+        /// <summary>
+        /// Obtiene todos los clientes en el sistema
+        /// </summary>
+        /// <returns>IEnumerable de ClienteDTO</returns>
         [HttpGet(Name = "ObtenerClientes")]
         public async Task<ActionResult<IEnumerable<ClienteDTO>>> Get()
         {
@@ -34,6 +38,11 @@ namespace InventarioAPI.Controllers.V1
             return Ok(clientes);
         }
 
+        /// <summary>
+        /// Obtiene un elemento especifico
+        /// </summary>
+        /// <param name="id">Id del elemento</param>
+        /// <returns>ClienteDTO</returns>
         [HttpGet("{id}", Name = "ObtenerCliente")]
         public async Task<ActionResult<ClienteDTO>> Get(int id)
         {

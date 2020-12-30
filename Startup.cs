@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using InventarioAPI.Context;
@@ -17,6 +19,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+
+/*
+ * Convencion que permite que se puedan mostrar los valores de retorno de nuestra API
+ */
+[assembly: ApiConventionType(typeof(DefaultApiConventions))]
 
 namespace CientesAPI
 {
@@ -69,6 +76,10 @@ namespace CientesAPI
                         Url = new Uri("https://wilmerterrero.com")
                     }
                 });
+
+                var xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+                var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+                config.IncludeXmlComments(xmlPath);
             });
         }
 
