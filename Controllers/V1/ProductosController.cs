@@ -28,12 +28,12 @@ namespace InventarioAPI.Controllers.V1
         [HttpGet("{id}", Name = "ObtenerProducto")]
         public async Task<ActionResult<Producto>> Get(int id)
         {
-            if (!await productoService.ProductoExists(id))
+            var producto = await productoService.GetProducto(id);
+
+            if (producto == null)
             {
                 return NotFound($"El Id {id} no se ha encontrado.");
             }
-
-            var producto = await productoService.GetProducto(id);
 
             return Ok(producto);
         }

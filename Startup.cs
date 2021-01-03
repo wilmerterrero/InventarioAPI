@@ -52,7 +52,7 @@ namespace CientesAPI
             services.AddTransient<IProveedorService, ProveedorService>();
 
             services.AddDbContext<AppDbContext>(options => 
-                options.UseSqlServer(Configuration.GetConnectionString("SQL_SERVER")));
+                options.UseSqlServer(Configuration.GetConnectionString("sqlserver")));
 
             services.AddControllers(config => {
                 config.Conventions.Add(new ApiExplorerGroupPerVersionConvention());

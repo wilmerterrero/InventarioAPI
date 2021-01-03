@@ -14,7 +14,7 @@
       "launchBrowser": true,
       "launchUrl": "api/v1/clientes",
       "environmentVariables": {
-        "connectionStrings:SQL_SERVER": "Data Source=WILMER;Initial Catalog=Clientes;Integrated Security=True;User ID=wilmer;Password=wilmer",
+        "connectionStrings:sqlserver": "Data Source=WILMER;Initial Catalog=Clientes;Integrated Security=True;User ID=wilmer;Password=wilmer",
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
     }
