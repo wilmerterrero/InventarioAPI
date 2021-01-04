@@ -65,6 +65,11 @@ namespace InventarioAPI.Controllers.V1
             return Ok(cliente);
         }
 
+        /// <summary>
+        /// Crea un nuevo elemento
+        /// </summary>
+        /// <param name="clienteFromBody"></param>
+        /// <returns></returns>
         [HttpPost(Name = "CrearCliente")]
         public async Task<ActionResult> Post([FromBody] ClienteCreacionDTO clienteFromBody)
         {
